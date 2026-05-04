@@ -3,8 +3,8 @@ import { createClient } from '@insforge/sdk';
 
 // Initialize InsForge client
 const insforge = createClient({
-  // Use environment variables for production
-  apiKey: process.env.INSFORGE_API_KEY || '',
+  baseUrl: process.env.INSFORGE_BASE_URL || '',
+  anonKey: process.env.INSFORGE_API_KEY || '',
 });
 
 const SYSTEM_PROMPT = `
