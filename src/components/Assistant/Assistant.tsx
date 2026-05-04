@@ -4,11 +4,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './Assistant.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, X, Bot, User, Loader2 } from 'lucide-react';
+import { createClient } from '@insforge/sdk';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
+
+const SYSTEM_PROMPT = `
+You are the CivicPulse AI, an expert assistant specializing in the election process. 
+Your goal is to help users understand election timelines, voting rules, eligibility, and procedures in an interactive and easy-to-follow way.
+
+Guidelines:
+1. Be impartial, professional, and encouraging.
+2. Provide accurate information based on standard democratic election processes (primarily focused on India but adaptable).
+3. If asked about specific dates, refer to official election commission websites for the most current data.
+4. Explain complex terms (like "Model Code of Conduct", "EVM", "Affidavit") in simple language.
+5. Encourage civic participation and voting.
+6. If you don't know something for sure, advise the user to check with their local Election Commission office.
+
+Keep your responses concise and well-structured using bullet points where appropriate.
+`;
 
 const Assistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +34,12 @@ const Assistant: React.FC = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize InsForge client
+  const insforge = createClient({
+    baseUrl: process.env.NEXT_PUBLIC_INSFORGE_BASE_URL || '',
+    anonKey: process.env.NEXT_PUBLIC_INSFORGE_API_KEY || '',
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,20 +58,26 @@ const Assistant: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+      const completion = await insforge.ai.chat.completions.create({
+        model: 'google/gemini-3-pro-image-preview',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...messages.map(m => ({ role: m.role, content: m.content })),
+          { role: 'user', content: input }
+        ],
+        temperature: 0.7,
+        maxTokens: 500,
       });
 
-      const data = await response.json();
+      const aiContent = completion.choices[0].message.content;
       
-      if (data.content) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
+      if (aiContent) {
+        setMessages(prev => [...prev, { role: 'assistant', content: aiContent }]);
       } else {
         throw new Error('No response content');
       }
     } catch (error) {
+      console.error('AI Error:', error);
       setMessages(prev => [...prev, { role: 'assistant', content: 'I apologize, but I am having trouble connecting right now. Please try again later.' }]);
     } finally {
       setIsLoading(false);
