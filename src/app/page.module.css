@@ -1,0 +1,73 @@
+.main {
+  min-height: 100vh;
+}
+
+.footer {
+  padding: 80px 0 40px;
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60px;
+}
+
+.brand {
+  max-width: 300px;
+}
+
+.footerLogo {
+  color: white;
+  margin-bottom: 16px;
+  font-size: 1.8rem;
+}
+
+.brand p {
+  opacity: 0.7;
+}
+
+.links {
+  display: flex;
+  gap: 80px;
+}
+
+.linkGroup h4 {
+  color: var(--secondary);
+  margin-bottom: 24px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.linkGroup a {
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.linkGroup a:hover {
+  opacity: 1;
+}
+
+.bottomBar {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 40px;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .links {
+    gap: 40px;
+    flex-direction: column;
+  }
+}

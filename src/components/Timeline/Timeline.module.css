@@ -1,0 +1,209 @@
+.section {
+  padding: 100px 0;
+  background-color: var(--surface);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.sectionSubtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.timelineWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.timelineNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  position: relative;
+  overflow-x: auto;
+  padding-bottom: 40px;
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
+  min-width: 100px;
+  transition: all 0.3s ease;
+}
+
+.iconWrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.navItem.active .iconWrapper {
+  background-color: var(--primary);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.navTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.navItem.active .navTitle {
+  color: var(--primary);
+}
+
+.connector {
+  position: absolute;
+  top: 28px;
+  left: 80%;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(26, 35, 126, 0.1);
+  z-index: -1;
+}
+
+.contentCard {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  box-shadow: var(--shadow-lg);
+  min-height: 350px;
+  position: relative;
+}
+
+.phaseHeader {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.largeIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  background-color: rgba(26, 35, 126, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.titleInfo {
+  flex: 1;
+}
+
+.phaseTitle {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.calendarBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background-color: white;
+  color: var(--primary);
+  border: 1px solid rgba(26, 35, 126, 0.1);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.calendarBtn:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.phaseDesc {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+}
+
+.detailsGrid {
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 32px;
+}
+
+.detailsTitle {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.detailsList {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.detailsList li {
+  position: relative;
+  padding-left: 24px;
+  color: var(--text-secondary);
+}
+
+.detailsList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--secondary);
+}
+
+@media (max-width: 900px) {
+  .timelineNav {
+    justify-content: flex-start;
+    gap: 32px;
+  }
+  
+  .connector {
+    display: none;
+  }
+  
+  .contentCard {
+    padding: 32px;
+  }
+  
+  .phaseHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
