@@ -75,8 +75,7 @@ jobs:
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
         env:
-          NEXT_PUBLIC_INSFORGE_API_KEY: ${{ secrets.INSFORGE_API_KEY }}
-          NEXT_PUBLIC_INSFORGE_BASE_URL: ${{ secrets.INSFORGE_BASE_URL }}
+          NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

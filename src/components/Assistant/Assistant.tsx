@@ -4,10 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './Assistant.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, X, Bot, User, Loader2 } from 'lucide-react';
-import { createClient } from '@insforge/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface Message {
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'model';
   content: string;
 }
 
@@ -30,15 +30,16 @@ const Assistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hello! I am your CivicPulse assistant. Ask me anything about the election process, voting rules, or timelines.' }
+    { role: 'model', content: 'Hello! I am your CivicPulse assistant. Ask me anything about the election process, voting rules, or timelines.' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize InsForge client
-  const insforge = createClient({
-    baseUrl: process.env.NEXT_PUBLIC_INSFORGE_BASE_URL || '',
-    anonKey: process.env.NEXT_PUBLIC_INSFORGE_API_KEY || '',
+  // Initialize Gemini
+  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
+  const model = genAI.getGenerativeModel({ 
+    model: 'gemini-1.5-flash',
+    systemInstruction: SYSTEM_PROMPT 
   });
 
   const scrollToBottom = () => {
@@ -58,30 +59,31 @@ const Assistant: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const completion = await insforge.ai.chat.completions.create({
-        model: 'google/gemini-3-pro-image-preview',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          ...messages.map(m => ({ role: m.role, content: m.content })),
-          { role: 'user', content: input }
-        ],
-        temperature: 0.7,
-        maxTokens: 500,
+      const chat = model.startChat({
+        history: messages.slice(0, -1).map(m => ({
+          role: m.role,
+          parts: [{ text: m.content }],
+        })),
       });
 
-      const aiContent = completion.choices[0].message.content;
+      const result = await chat.sendMessage(input);
+      const aiContent = result.response.text();
       
       if (aiContent) {
-        setMessages(prev => [...prev, { role: 'assistant', content: aiContent }]);
+        setMessages(prev => [...prev, { role: 'model', content: aiContent }]);
       } else {
         throw new Error('No response content');
       }
     } catch (error) {
       console.error('AI Error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'I apologize, but I am having trouble connecting right now. Please try again later.' }]);
+      setMessages(prev => [...prev, { role: 'model', content: 'I apologize, but I am having trouble connecting right now. Please try again later.' }]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getRoleIcon = (role: string) => {
+    return role === 'model' ? <Bot size={16} /> : <User size={16} />;
   };
 
   return (
@@ -121,9 +123,9 @@ const Assistant: React.FC = () => {
 
             <div className={styles.messagesList}>
               {messages.map((msg, index) => (
-                <div key={index} className={`${styles.messageWrapper} ${styles[msg.role]}`}>
+                <div key={index} className={`${styles.messageWrapper} ${styles[msg.role === 'model' ? 'assistant' : 'user']}`}>
                   <div className={styles.avatar}>
-                    {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
+                    {getRoleIcon(msg.role)}
                   </div>
                   <div className={styles.messageContent}>
                     {msg.content}
