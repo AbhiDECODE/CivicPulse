@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@insforge/sdk';
 
-// Initialize InsForge client
-const insforge = createClient({
-  baseUrl: process.env.INSFORGE_BASE_URL || '',
-  anonKey: process.env.INSFORGE_API_KEY || '',
-});
-
 const SYSTEM_PROMPT = `
 You are the CivicPulse AI, an expert assistant specializing in the election process. 
 Your goal is to help users understand election timelines, voting rules, eligibility, and procedures in an interactive and easy-to-follow way.
@@ -26,6 +20,12 @@ export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json();
 
+    // Initialize InsForge client inside handler
+    const insforge = createClient({
+      baseUrl: process.env.INSFORGE_BASE_URL || '',
+      anonKey: process.env.INSFORGE_API_KEY || '',
+    });
+
     // Basic validation
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     // Call InsForge AI SDK (Gemini)
     const completion = await insforge.ai.chat.completions.create({
-      model: 'google/gemini-2.0-flash-001', // Or any other available model
+      model: 'google/gemini-3-pro-image-preview', // Use an enabled model from metadata
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         ...messages.map((m: any) => ({
